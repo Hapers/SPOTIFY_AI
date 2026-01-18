@@ -1,14 +1,56 @@
-# env
-.env
-venv/
+# ======================
+# Python
+# ======================
 
-# data
-backend/data/
-backend/models/
-
-# python
+# Python / FastAPI
 __pycache__/
 *.pyc
+.cache/
+backend/.cache/
 
-# system
+# ML
+models/*.pt
+models/*.pkl
+models/*.bin
+
+# Env
+venv/
+.env
+
+# Frontend
+node_modules/
+dist/
+
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# ======================
+# ML / Data
+# ======================
+data/*.csv
+models/
+*.pt
+*.pkl
+
+# ======================
+# Jupyter / Colab
+# ======================
+.ipynb_checkpoints/
+
+# ======================
+# Node / Frontend
+# ======================
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======================
+# OS
+# ======================
 .DS_Store
+Thumbs.db

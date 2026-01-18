@@ -8,6 +8,11 @@ from model import AutoEncoder
 from csv_data import load_spotify_csv
 from config import *
 
+import os
+
+os.makedirs("models", exist_ok=True)
+
+
 CSV_PATH = "data/spotify_tracks.csv"
 
 def train():

@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+spotipy
+python-dotenv
+torch
+numpy
+scikit-learn
