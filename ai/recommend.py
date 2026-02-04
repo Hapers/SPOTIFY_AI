@@ -1,94 +1,72 @@
 import torch
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
+import torch.nn.functional as F
 
-EMBEDDINGS_PATH = "models/embeddings.pt"
+from ai.config import EMBEDDINGS_PATH, TOP_K
+from ai.track_features import FEATURES  # ⬅️ словарь с energy, tempo и т.д.
 
-class Recommender:
-    def __init__(self):
-        data = torch.load(EMBEDDINGS_PATH, weights_only=True)
-        self.embeddings = data["embeddings"].numpy()
-        self.track_ids = data["track_ids"]
+print("🔄 Loading embeddings...")
 
-    # ---------- CORE ----------
-    def _similarity(self, query_vec):
-        sims = cosine_similarity(
-            query_vec.reshape(1, -1),
-            self.embeddings
-        )[0]
-        return sims
+data = torch.load(EMBEDDINGS_PATH, map_location="cpu")
 
-    # ---------- MODES ----------
-    def apply_mode(self, sims, mode, meta):
+embeddings = data["embeddings"]      # Tensor [N, D]
+track_ids = data["track_ids"]        # list[str]
+
+embeddings = F.normalize(embeddings, dim=1)
+
+print(f"✅ Loaded {len(track_ids)} embeddings")
+
+
+def has_track(track_id: str) -> bool:
+    return track_id in track_ids
+
+
+def recommend(
+    track_id: str,
+    top_k: int = TOP_K,
+    mode: str = "base",
+):
+    if track_id not in track_ids:
+        raise ValueError("Track ID not found")
+
+    idx = track_ids.index(track_id)
+    query = embeddings[idx].unsqueeze(0)
+
+    similarities = torch.matmul(query, embeddings.T).squeeze(0)
+    similarities[idx] = -1.0
+
+    base_features = FEATURES.get(track_id, {})
+
+    scores = []
+
+    for i, sim in enumerate(similarities.tolist()):
+        tid = track_ids[i]
+        score = sim
+
+        feats = FEATURES.get(tid, {})
+
+        # 🎚️ ENERGY MODE
         if mode == "energy":
-            return sims * (1 + meta["energy"])
-        if mode == "popularity":
-            return sims * (1 + meta["popularity"])
-        return sims
+            e1 = base_features.get("energy")
+            e2 = feats.get("energy")
+            if e1 is not None and e2 is not None:
+                score += 0.15 * (1 - abs(e1 - e2))
 
-    # ---------- TRACK ----------
-    def recommend_from_track(self, track_index, top_n=10, mode="base"):
-        query_vec = self.embeddings[track_index]
-        sims = self._similarity(query_vec)
+        # ❄️ CHILL MODE
+        elif mode == "chill":
+            score += feats.get("acousticness", 0) * 0.3
+            score -= feats.get("energy", 0) * 0.2
+            score -= feats.get("tempo", 120) / 300 * 0.2
 
-        meta = {
-            "energy": 0.2,
-            "popularity": 0.1
-        }
+        # ⭐ POPULAR MODE
+        elif mode == "popular":
+            pop = feats.get("popularity", 0)
+            score *= (1 + pop / 100)
 
-        sims = self.apply_mode(sims, mode, meta)
+        scores.append((score, tid))
 
-        indices = np.argsort(sims)[::-1]
-        indices = indices[indices != track_index][:top_n]
+    scores.sort(reverse=True, key=lambda x: x[0])
 
-        return self._format(indices, sims)
-
-    # ---------- PLAYLIST ----------
-    def recommend_from_playlist(self, track_indices, top_n=20, mode="base"):
-        playlist_vec = np.mean(self.embeddings[track_indices], axis=0)
-        sims = self._similarity(playlist_vec)
-
-        meta = {
-            "energy": 0.2,
-            "popularity": 0.1
-        }
-
-        sims = self.apply_mode(sims, mode, meta)
-
-        indices = np.argsort(sims)[::-1]
-        indices = [i for i in indices if i not in track_indices][:top_n]
-
-        return self._format(indices, sims)
-
-    # ---------- USER PROFILE ----------
-    def recommend_from_profile(self, history_indices, top_n=20):
-        profile_vec = np.mean(self.embeddings[history_indices], axis=0)
-        sims = self._similarity(profile_vec)
-
-        indices = np.argsort(sims)[::-1]
-        indices = [i for i in indices if i not in history_indices][:top_n]
-
-        return self._format(indices, sims)
-
-    # ---------- FORMAT ----------
-    def _format(self, indices, sims):
-        return [
-            {
-                "track_id": self.track_ids[i],
-                "similarity": float(sims[i])
-            }
-            for i in indices
-        ]
-
-
-if __name__ == "__main__":
-    rec = Recommender()
-
-    print("=== BASE TRACK ===")
-    print(rec.recommend_from_track(0, mode="base"))
-
-    print("=== ENERGY PLAYLIST ===")
-    print(rec.recommend_from_playlist([0, 1, 2], mode="energy"))
-
-    print("=== USER PROFILE ===")
-    print(rec.recommend_from_profile([10, 11, 12]))
+    return [
+        {"track_id": tid, "similarity": float(score)}
+        for score, tid in scores[:top_k]
+    ]

@@ -12,6 +12,7 @@ class RecommendRequest(BaseModel):
     track_index: int
     mode: str                 # base | energy | popular
     genres: List[str] = []
+    
 
 class RecommendItem(BaseModel):
     track_id: str

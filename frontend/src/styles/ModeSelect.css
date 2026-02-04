@@ -1,0 +1,188 @@
+.mode-box {
+  position: relative; /* ОЧЕНЬ ВАЖНО для выравнивания списка */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+/* текст */
+.mode-label {
+  color: var(--text-muted);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* кнопка */
+.mode-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  min-width: 180px;
+
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mode-trigger:hover {
+  border-color: #64748b;
+}
+
+.mode-trigger.open {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+.mode-arrow {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* dropdown */
+.mode-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 175px;
+  margin-top: 8px;
+
+  background: #1a1a1a; /* Или var(--panel) */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+
+  width: 260px; /* Немного шире для описаний */
+  padding: 8px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 1000; /* Чтобы был выше всех элементов */
+
+  animation: dropdownFade 0.2s ease-out;
+  transform-origin: top;
+}
+
+/* Улучшаем hover эффект */
+.mode-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(1.02);
+}
+
+
+/* item */
+.mode-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  color: var(--text);
+  font-size: 14px;
+
+  cursor: pointer;
+  transition: 
+    background 0.15s ease,
+    transform 0.12s ease;
+}
+
+.mode-item:hover {
+  background: var(--panel-2);
+  outline: 1px solid var(--border-soft);
+  transform: translateX(2px);
+}
+
+
+.mode-item.active {
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  color: #020617;
+  font-weight: 600;
+}
+
+.mode-icon {
+  font-size: 16px;
+}
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/* ===== Tooltip возле "Recommendation mode" ===== */
+
+.mode-info {
+  position: relative;
+  margin-left: 6px;
+  color: #60a5fa;
+  cursor: help;
+}
+
+.mode-tooltip {
+  position: absolute;
+  top: 22px;
+  left: 0;
+
+  background: var(--tooltip-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+
+  padding: 10px 12px;
+  width: 230px;
+
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text);
+
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+
+  transition: all 0.18s ease;
+  z-index: 100;
+}
+
+.mode-info:hover .mode-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Описание внутри dropdown ===== */
+
+.mode-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-name {
+  font-weight: 500;
+}
+
+.mode-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.info-icon {
+  color: #60a5fa;
+  opacity: 0.8;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.mode-info:hover .info-icon {
+  opacity: 1;
+  transform: scale(1.05);
+}

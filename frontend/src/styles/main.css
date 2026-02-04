@@ -1,9 +1,169 @@
+/* =========================
+   THEME VARIABLES
+========================= */
+
+:root[data-theme="dark"] {
+  --bg: #020617;
+  --panel: #0f172a;
+  --panel-soft: #1e293b;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #334155;
+  --accent: #22c55e;
+}
+
+:root[data-theme="light"] {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-soft: #f1f5f9;
+  --text: #020617;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --accent: #22c55e;
+}
+
+
+/* =========================
+   GLOBAL
+========================= */
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
-  background: radial-gradient(circle at top, #0f172a, #020617);
-  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  background: var(--bg);
+  color: var(--text);
+
+  transition: background 0.25s ease, color 0.25s ease;
 }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================
+   TOP BAR
+========================= */
+
+/* Общие стили и TopBar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 80px; 
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  position: relative; /* Чтобы z-index работал корректно */
+  z-index: 100;
+}
+
+/* КОНТЕЙНЕР КНОПОК СПРАВА */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 101; /* Выше чем сама панель */
+}
+
+/* КНОПКА ТЕМЫ (Sun/Moon) */
+.theme-toggle-v2 {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Размер самого кружка */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  
+  /* Анимация */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  
+  /* ДЕФОЛТ (Темная тема): Белый круг, черная иконка */
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.theme-toggle-v2 svg {
+  width: 18px; /* Иконка чуть меньше кружка */
+  height: 18px;
+  display: block;
+}
+
+/* Эффект при наведении */
+.theme-toggle-v2:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* СВЕТЛАЯ ТЕМА: Черный круг, белая иконка (на зеленом фоне бара) */
+:root[data-theme="light"] .theme-toggle-v2 {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* АВАТАРКА (для симметрии) */
+.topbar-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  display: block;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Состояние при наведении */
+.theme-toggle-v2:hover {
+  transform: scale(1.2); /* Чуть-чуть увеличивается */
+}
+
+/* ФИКС ДЛЯ СВЕТЛОЙ ТЕМЫ (Зеленый фон) */
+:root[data-theme="light"] .topbar {
+  background: var(--accent);
+}
+
+:root[data-theme="light"] .theme-toggle-v2 {
+  color: #ffffff !important; /* Всегда белая иконка на зеленом */
+}
+
+:root[data-theme="light"] .logo {
+  color: #000000 !important; /* Логотип черный для контраста */
+}
+
+/* Кнопка Аккаунта */
+.account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none !important;
+  
+  /* Используем инверсию */
+  background-color: var(--btn-bg) !important;
+  color: var(--btn-text) !important;
+  
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.account-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* =========================
+   PAGE LAYOUT
+========================= */
 
 .container {
   max-width: 900px;
@@ -17,9 +177,14 @@ body {
 }
 
 .subtitle {
-  color: #94a3b8;
+  color: var(--muted);
   margin-bottom: 24px;
 }
+
+
+/* =========================
+   SEARCH
+========================= */
 
 .search-bar {
   display: flex;
@@ -28,77 +193,470 @@ body {
 
 input {
   flex: 1;
-  padding: 12px;
+  padding: 12px 14px;
+
   border-radius: 10px;
-  border: none;
-  background: #020617;
-  color: white;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+
+  font-size: 15px;
 }
 
 button {
   padding: 12px 18px;
   border-radius: 10px;
   border: none;
-  background: #22c55e;
-  font-weight: bold;
   cursor: pointer;
+  /* Убираем жесткий цвет отсюда, если хотим управлять им точечно */
 }
 
 button:hover {
   opacity: 0.9;
 }
 
-.loading {
-  margin-top: 20px;
-  color: #94a3b8;
+
+/* =========================
+   MODE SELECT
+========================= */
+
+.mode-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
 }
 
+.mode-label {
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.mode-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  min-width: 180px;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mode-trigger:hover {
+  border-color: var(--muted);
+}
+
+.mode-trigger.open {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+.mode-arrow {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mode-dropdown {
+  position: absolute;
+  margin-top: 6px;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  width: 220px;
+  padding: 6px;
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+
+  animation: dropdownFade 0.18s ease-out;
+}
+
+.mode-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  color: var(--text);
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.mode-item:hover {
+  background: var(--panel-soft);
+}
+
+.mode-item.active {
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  color: #020617;
+  font-weight: 600;
+}
+
+.mode-icon {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =========================
+   LIST / CARDS
+========================= */
+
+.loading {
+  margin-top: 20px;
+  color: var(--muted);
+}
+
+/* Контейнер для списка */
 .list {
   margin-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 14px; /* Вернули комфортный зазор между карточками */
+  max-width: 900px; /* Чтобы не были слишком широкими на весь экран */
 }
 
+/* Карточка - возвращаем объем */
 .card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 20px; /* Вернули старые добрые отступы */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px;
-  background: linear-gradient(135deg, #020617, #020617cc);
-  border-radius: 14px;
+  transition: background 0.25s ease, transform 0.2s ease, border-color 0.25s ease;
+  min-height: 80px; /* Увеличили высоту для солидности */
 }
 
-.card.highlight {
-  border: 1px solid #22c55e55;
+.card:hover {
+  background: var(--panel-soft);
+  border-color: var(--accent);
+  transform: translateY(-2px); /* Теперь карточка чуть «подпрыгивает» */
 }
 
+/* Инфо о треке */
 .card-info {
   display: flex;
-  gap: 14px;
   align-items: center;
+  gap: 16px;
 }
 
 .card-info img {
-  width: 56px;
+  width: 56px; /* Вернули первоначальный размер обложки */
   height: 56px;
   border-radius: 10px;
   object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-info strong {
+  display: block;
+  font-size: 16px; /* Чуть крупнее шрифт названия */
+  font-weight: 700;
+  color: var(--text) !important;
+  margin-bottom: 4px;
 }
 
 .card-info span {
   display: block;
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--muted) !important;
 }
 
-.section-title {
-  margin-top: 40px;
-  font-size: 22px;
-}
-
-.spotify-link {
-  color: #22c55e;
-  font-weight: bold;
+/* Кнопки внутри карточек */
+.card button, .spotify-link {
+  padding: 10px 20px; /* Сделали кнопки побольше */
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Цвета кнопок */
+.card button {
+  background: var(--accent);
+  color: #020617;
+}
+
+:root[data-theme="light"] .card button {
+  background: #020617;
+  color: #ffffff;
+}
+
+.card button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+/* Ссылка на Spotify (Open) */
+.spotify-link {
+  background-color: #1DB954; /* Зеленый Spotify */
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  display: inline-block;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.spotify-link:hover {
+  background-color: #1ed760;
+  transform: scale(1.05);
+}
+
+/* Эффект при клике */
+.spotify-link:active {
+  transform: scale(0.98);
+}
+.logo {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  text-decoration: none !important; /* Убираем подчеркивание */
+  color: var(--bar-text) !important; /* Используем наш адаптивный цвет */
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.logo:hover {
+  opacity: 0.8; /* Легкое затухание при наведении, чтобы было понятно, что это ссылка */
+}
+
+/* Фикс для светлой темы, если bar-text не срабатывает */
+:root[data-theme="light"] .logo {
+  color: #020617 !important;
+}
+
+.logout-btn {
+  margin-left: auto;
+  background: transparent;
+  color: #ff4444; /* Красный цвет для акцента на выходе */
+  border: 1px solid #ff4444;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #ff4444;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.2);
+}
+
+/* В светлой теме на белом фоне */
+:root[data-theme="light"] .logout-btn {
+  border-color: #d32f2f;
+  color: #d32f2f;
+}
+
+:root[data-theme="light"] .logout-btn:hover {
+  background: #d32f2f;
+  color: #fff;
+}
+
+/* Базовый стиль кнопки (ТЕМНАЯ ТЕМА) */
+.account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  border-radius: 999px; /* Овальная форма */
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none !important;
+  
+  /* В темной теме: белая кнопка, черный текст */
+  background-color: #ffffff !important;
+  color: #020617 !important;
+  
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.account-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  opacity: 0.9;
+}
+
+/* СТИЛЬ ДЛЯ СВЕТЛОЙ ТЕМЫ (на зеленом фоне) */
+:root[data-theme="light"] .account-btn {
+  /* В светлой теме: черная кнопка, белый текст */
+  background-color: #020617 !important;
+  color: #ffffff !important;
+}
+
+/* Фикс для логотипа, чтобы он тоже был черным на зеленом */
+:root[data-theme="light"] .logo {
+  color: #020617 !important;
+}
+
+/* Список истории */
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  background: var(--panel-soft);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease;
+}
+
+.history-item:hover {
+  transform: translateX(5px);
+  border-color: var(--accent);
+}
+
+.history-track-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.history-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.history-info strong {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.history-info span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.mode-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+/* Кнопка Open */
+.open-link {
+  padding: 8px 16px;
+  background: #1db954; /* Фирменный зеленый Spotify */
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  transition: opacity 0.2s;
+}
+
+.open-link:hover {
+  opacity: 0.8;
+}
+
+/* Фикс для маленьких карточек */
+.muted-text {
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 10px;
+}
+.spotify-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #1DB954; /* Фирменный зеленый Spotify */
+  color: white;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  transition: transform 0.2s;
+}
+
+.spotify-link:hover {
+  transform: scale(1.05);
+  background-color: #1ed760;
+}
+
+.play-mini-btn {
+  background-color: #1DB954;
+  color: white !important;
+  padding: 5px 12px;
+  border-radius: 15px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: auto; /* Прижмет кнопку вправо */
+}
+
+.play-mini-btn:hover {
+  background-color: #1ed760;
+  transform: scale(1.05);
+}
+
+.limit-control {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text);
+}
+
+.limit-control input[type="range"] {
+  accent-color: #1DB954; /* Зеленый цвет Spotify */
+  cursor: pointer;
 }

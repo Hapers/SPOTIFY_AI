@@ -1,11 +1,9 @@
+import os
 import torch
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-INPUT_FEATURES = 10
-EMBEDDING_SIZE = 16
-EPOCHS = 20
-BATCH_SIZE = 128
-LEARNING_RATE = 0.001
+EMBEDDINGS_PATH = os.path.join(BASE_DIR, "models", "embeddings.pt")
 
-print("Using device:", DEVICE)
+TOP_K = 10
+DEVICE = torch.device("cpu")
