@@ -65,26 +65,20 @@ def get_track(track_id: str):
     }
 
 def create_spotify_playlist(user_token: str, track_ids: list, playlist_name: str = "AI Recommendations"):
-    """
-    Создает плейлист в аккаунте пользователя.
-    user_token: это access_token, полученный через OAuth (с фронтенда)
-    """
+
     headers = {"Authorization": f"Bearer {user_token}"}
-    
-    # 1. Получаем ID текущего пользователя (чтобы знать, кому создавать плейлист)
+
     user_res = requests.get("https://api.spotify.com/v1/me", headers=headers)
     user_res.raise_for_status()
     user_id = user_res.json()["id"]
 
-    # 2. Создаем пустой плейлист
-    # playlist_name можно менять в зависимости от режима (например, "AI Chill Mix")
     create_res = requests.post(
         f"https://api.spotify.com/v1/users/{user_id}/playlists",
         headers=headers,
         json={
             "name": playlist_name,
             "description": "Created by Spotify AI Assistant",
-            "public": False # Плейлист будет приватным
+            "public": False
         }
     )
     create_res.raise_for_status()
@@ -92,8 +86,6 @@ def create_spotify_playlist(user_token: str, track_ids: list, playlist_name: str
     playlist_id = playlist_data["id"]
     playlist_url = playlist_data["external_urls"]["spotify"]
 
-    # 3. Добавляем треки в созданный плейлист
-    # Spotify требует формат URIs: "spotify:track:ID"
     uris = [f"spotify:track:{tid}" for tid in track_ids]
     
     add_res = requests.post(

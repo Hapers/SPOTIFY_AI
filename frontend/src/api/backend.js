@@ -1,14 +1,13 @@
 const API_URL = "https://bradley-semifine-amada.ngrok-free.dev";
 
-// Универсальные заголовки для всех запросов
 const headers = {
   "Content-Type": "application/json",
-  "ngrok-skip-browser-warning": "69420" // Любое значение, чтобы пропустить заглушку ngrok
+  "ngrok-skip-browser-warning": "69420"
 };
 
 export async function searchTracks(query) {
   if (!query) return [];
-  // Добавляем headers в GET запрос
+
   const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`, {
     headers: headers
   });
@@ -21,7 +20,7 @@ export async function fetchRecommendations(trackId, topK = 10, mode = "base", us
 
   const res = await fetch(`${API_URL}/recommend`, {
     method: "POST",
-    headers: headers, // Используем наши заголовки с пропуском ngrok
+    headers: headers,
     body: JSON.stringify({ 
       track_id: trackId, 
       top_k: topK, 
@@ -37,7 +36,7 @@ export async function fetchRecommendations(trackId, topK = 10, mode = "base", us
 export async function fetchTrack(trackId) {
   if (!trackId || trackId === "undefined") return null;
   const res = await fetch(`${API_URL}/track/${trackId}`, {
-    headers: headers // Добавляем headers здесь тоже
+    headers: headers
   });
   if (!res.ok) throw new Error("Track fetch failed");
   return res.json();
@@ -45,7 +44,7 @@ export async function fetchTrack(trackId) {
 
 export async function fetchHistory(userId = "demo_user") {
   const res = await fetch(`${API_URL}/history?user_id=${encodeURIComponent(userId)}`, {
-    headers: headers // Добавляем headers здесь тоже
+    headers: headers
   });
   if (!res.ok) throw new Error("History failed");
   return res.json();

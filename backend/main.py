@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
 
-# Импортируй свои функции (убедись, что пути правильные)
 from backend.spotify_api import search_tracks, get_track, create_spotify_playlist
 from ai.recommend import recommend, has_track
 from backend.auth import router as auth_router
@@ -12,13 +11,12 @@ from backend.history_store import add_history, get_history
 
 app = FastAPI(title="Spotify AI")
 
-# --- CORS (ОЧЕНЬ ВАЖНО: Должно быть в самом верху) ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://bradley-semifine-amada.ngrok-free.dev" # Добавь это
+        "https://bradley-semifine-amada.ngrok-free.dev"
     ], 
     allow_credentials=True,
     allow_methods=["*"],
@@ -27,7 +25,6 @@ app.add_middleware(
 
 app.include_router(auth_router)
 
-# --- Модели ---
 class PlaylistRequest(BaseModel):
     name: str
     track_ids: List[str]
@@ -39,7 +36,6 @@ class RecommendRequest(BaseModel):
     mode: str = "base"
     user_id: Optional[str] = "demo_user"
 
-# --- Эндпоинты ---
 
 @app.get("/search")
 def search(q: str, limit: int = 10):
@@ -56,7 +52,7 @@ def track(track_id: str):
     return get_track(track_id)
 
 @app.get("/history")
-def history(user_id: str = "demo_user"): # Параметр уже есть, фронтенд просто должен его присылать
+def history(user_id: str = "demo_user"):
     try:
         data = get_history(user_id)
         return data if data else []
@@ -66,13 +62,10 @@ def history(user_id: str = "demo_user"): # Параметр уже есть, ф�
 
 @app.post("/recommend")
 def recommend_tracks(payload: RecommendRequest):
-    # Проверка наличия трека в базе AI
     if not has_track(payload.track_id):
         raise HTTPException(status_code=404, detail="Track not found in AI database")
 
     try:
-        # 1. ЗАПРОС С ЗАПАСОМ: Запрашиваем на 5 треков больше (например, 15 вместо 10)
-        # Это гарантирует, что даже после фильтрации битых ссылок у нас останется нужное количество
         fetch_limit = payload.top_k + 5
         raw_recs = recommend(payload.track_id, fetch_limit, payload.mode)
         
@@ -92,8 +85,7 @@ def recommend_tracks(payload: RecommendRequest):
 
                 t_data = get_track(tid)
                 
-                # УЛУЧШЕННАЯ ПРОВЕРКА: 
-                # Если нет имени или картинки — это "битый" трек, пропускаем его
+            
                 if not t_data or not t_data.get("name") or not t_data.get("image"):
                     continue
 
@@ -108,13 +100,12 @@ def recommend_tracks(payload: RecommendRequest):
             except Exception:
                 continue 
 
-        # Сохраняем в историю MongoDB (используя ID пользователя из payload)
         add_history(
             user_id=payload.user_id,
             source_track_id=payload.track_id,
             source_track_name=source_info.get("name", "Unknown"),
             source_track_image=source_info.get("image", ""),
-            mode=payload.mode, # Например: Chill, Energy или Popular
+            mode=payload.mode,
             recommended=full_recs
         )
 

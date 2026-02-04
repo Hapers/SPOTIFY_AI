@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { searchTracks, fetchRecommendations } from "../api/backend";
 import RecommendationMode from "../components/RecommendationMode";
 
-// 1. Выносим URL бэкенда, чтобы менять в одном месте
 const API_URL = "https://bradley-semifine-amada.ngrok-free.dev";
 const NGROK_HEADERS = { "ngrok-skip-browser-warning": "true" };
 
@@ -18,12 +17,10 @@ export default function Home() {
   const [searchTime, setSearchTime] = useState(null);
   const [mode, setMode] = useState(localStorage.getItem("recommend_mode") || "base");
 
-  // 2. Исправляем получение профиля пользователя через твой бэкенд
   useEffect(() => {
     const token = localStorage.getItem("spotify_token");
     if (!token) return;
 
-    // Стучимся в Spotify через наш бэкенд или напрямую (если есть токен)
     fetch("https://api.spotify.com/v1/me", {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -68,7 +65,6 @@ export default function Home() {
     }
   }
 
-  // 3. Исправляем сохранение плейлиста (убираем 127.0.0.1)
   async function handleSavePlaylist() {
     const token = localStorage.getItem("spotify_token");
     if (!token) return alert("Please log in to save playlists!");
@@ -79,7 +75,7 @@ export default function Home() {
         method: "POST",
         headers: { 
             "Content-Type": "application/json",
-            ...NGROK_HEADERS // Добавляем пропуск заглушки ngrok
+            ...NGROK_HEADERS
         },
         body: JSON.stringify({
           name: `AI ${mode.toUpperCase()} Mix`,

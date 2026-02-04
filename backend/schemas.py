@@ -8,9 +8,9 @@ class SearchResponse(BaseModel):
     image: Optional[str]
 
 class RecommendRequest(BaseModel):
-    source_type: str          # track | playlist | profile
+    source_type: str
     track_index: int
-    mode: str                 # base | energy | popular
+    mode: str
     genres: List[str] = []
     
 

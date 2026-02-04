@@ -11,7 +11,6 @@ export default function Profile() {
   const token = localStorage.getItem("spotify_token");
   const [loading, setLoading] = useState(!!token);
 
-  // Достаем текущий режим
   const currentMode = localStorage.getItem("recommend_mode") || "base";
 
   useEffect(() => {
@@ -20,7 +19,6 @@ export default function Profile() {
       return;
     }
 
-    // 1. Загружаем профиль пользователя из Spotify
     fetch("https://api.spotify.com/v1/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -30,7 +28,7 @@ export default function Profile() {
       })
       .then((data) => {
         const spotifyUser = {
-          id: data.id, // СОХРАНЯЕМ ID ДЛЯ ЗАПРОСА ИСТОРИИ
+          id: data.id,
           name: data.display_name,
           email: data.email || "Not provided",
           country: data.country,
@@ -38,7 +36,6 @@ export default function Profile() {
         };
         setUser(spotifyUser);
 
-        // 2. ТЕПЕРЬ грузим историю, передавая реальный ID
         return fetchHistory(spotifyUser.id); 
       })
       .then((historyData) => {

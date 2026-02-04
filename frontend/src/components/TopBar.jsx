@@ -22,27 +22,23 @@ export default function TopBar() {
   const [token, setToken] = useState(localStorage.getItem("spotify_token"));
   const [userAvatar, setUserAvatar] = useState(null);
   
-  // Хук location нужен, чтобы ловить момент возвращения пользователя после логина
   const location = useLocation();
 
-  // 1. Следим за изменением URL. Если URL сменился, проверяем токен в localStorage
   useEffect(() => {
     const storedToken = localStorage.getItem("spotify_token");
     if (storedToken !== token) {
       setToken(storedToken);
     }
-  }, [location]); // Срабатывает при каждом переходе по страницам
+  }, [location]);
 
-  // 2. Управление темой
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // 3. Загрузка данных профиля при наличии токена
   useEffect(() => {
     if (token) {
-      fetch("https://api.spotify.com/v1/me", { // Исправил URL на правильный Spotify API
+      fetch("https://api.spotify.com/v1/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => {
@@ -55,7 +51,7 @@ export default function TopBar() {
           }
         })
         .catch(() => {
-          // Если токен протух — очищаем его
+
           localStorage.removeItem("spotify_token");
           setToken(null);
           setUserAvatar(null);
@@ -70,7 +66,6 @@ export default function TopBar() {
       <Link to="/" className="logo">Spotify AI</Link>
 
       <div className="topbar-right">
-        {/* Кнопка переключения темы */}
         <button 
           className="theme-toggle-v2" 
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -79,14 +74,13 @@ export default function TopBar() {
           {theme === "dark" ? <SunIcon /> : <MoonIcon />}
         </button>
 
-        {/* Условный рендеринг: Аватарка или Кнопка входа */}
         {token ? (
           <Link to="/profile" className="avatar-link">
             {userAvatar ? (
               <img src={userAvatar} alt="Profile" className="topbar-avatar" />
             ) : (
               <div className="topbar-avatar placeholder-circle">
-                {/* Буква-заглушка */}
+                
                 U
               </div>
             )}

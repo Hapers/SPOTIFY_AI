@@ -17,7 +17,6 @@ FEATURE_COLUMNS = [
 def load_spotify_csv(path, limit=None):
     df = pd.read_csv(path)
 
-    # Проверка фич
     missing = [c for c in FEATURE_COLUMNS if c not in df.columns]
     if missing:
         raise ValueError(f"Missing columns in CSV: {missing}")
@@ -32,13 +31,12 @@ def load_spotify_csv(path, limit=None):
         dtype=torch.float32
     )
 
-    # Универсально обрабатываем ID
     if "id" in df.columns:
         track_ids = df["id"].astype(str).tolist()
     elif "track_id" in df.columns:
         track_ids = df["track_id"].astype(str).tolist()
     else:
-        track_ids = None  # допустимо
+        track_ids = None
 
     return features, track_ids
 

@@ -34,7 +34,6 @@ export default function ModeSelect({ mode, setMode }) {
 
   const current = MODES.find((m) => m.value === mode);
 
-  // закрытие при клике вне
   useEffect(() => {
     function handleClickOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) {

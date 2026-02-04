@@ -27,10 +27,10 @@ os.makedirs(MODELS_DIR, exist_ok=True)
 # LOAD DATA
 # ======================
 
-print("📂 Loading CSV...")
+print("Loading CSV...")
 X, track_ids = load_spotify_csv(CSV_PATH)
 
-print(f"✅ Loaded {len(X)} tracks with {INPUT_DIM} features")
+print(f"Loaded {len(X)} tracks with {INPUT_DIM} features")
 
 # ======================
 # NORMALIZE
@@ -61,7 +61,7 @@ loss_fn = nn.MSELoss()
 # TRAIN
 # ======================
 
-print("🧠 Training autoencoder...")
+print("Training autoencoder...")
 
 for epoch in range(EPOCHS):
     total_loss = 0.0
@@ -97,8 +97,8 @@ torch.save(
     f"{MODELS_DIR}/embeddings.pt"
 )
 
-print("✅ Training finished")
-print("📦 Saved:")
+print("Training finished")
+print("Saved:")
 print(" - models/autoencoder.pt")
 print(" - models/embeddings.pt")
 print(" - models/scaler.pkl")
